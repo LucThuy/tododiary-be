@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.tododiary.tododiarybe.entity.User;
 
-@Repository
+
 public interface IUserRepository extends JpaRepository<User, String> {
 
 	boolean existsByUsername(String username);

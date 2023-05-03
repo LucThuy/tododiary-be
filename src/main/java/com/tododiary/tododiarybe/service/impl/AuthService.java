@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.tododiary.tododiarybe.dto.LoginDto;
 import com.tododiary.tododiarybe.dto.RegisterDto;
+import com.tododiary.tododiarybe.entity.File;
 import com.tododiary.tododiarybe.entity.User;
 import com.tododiary.tododiarybe.exception.ApiException;
 import com.tododiary.tododiarybe.repository.IUserRepository;
@@ -67,8 +68,8 @@ public class AuthService implements IAuthService {
 
 		User updateUser = userRepository.save(user);
 		
-		String avatarPath = fileService.save(avatar, "images/" + updateUser.getId());
-		updateUser.setAvatar(avatarPath);
+		File avatarFile = fileService.save(avatar, "images/" + updateUser.getId());
+		updateUser.setAvatar(avatarFile);
 		
 		userRepository.saveAndFlush(updateUser);
 		
