@@ -26,7 +26,7 @@ public class SecurityConfig {
 
 	@Autowired
 	private JwtAuthenticationFilter authenticationFilter;
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -39,12 +39,13 @@ public class SecurityConfig {
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf().disable()
-				.authorizeHttpRequests((authorize) -> authorize.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+		http.cors().and().csrf().disable()
+				.authorizeHttpRequests((authorize) -> authorize.requestMatchers(HttpMethod.GET, "/files/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/file/download/**").permitAll()
 						.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-		
+
 		http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();

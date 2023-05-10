@@ -30,7 +30,7 @@ public class MainController {
 	public ResponseEntity<UserDto> user(@AuthenticationPrincipal UserDetails curUser){
 		User user = userService.findByUsername(curUser.getUsername()).get();
 		UserDto userDto = modelMapper.map(user, UserDto.class);
-		userDto.setAvatar(user.getAvatar().getId());
+		userDto.setAvatar(user.getAvatar().getUri());
 		return new ResponseEntity<>(userDto, HttpStatus.OK);
 	}
 }

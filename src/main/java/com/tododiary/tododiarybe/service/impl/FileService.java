@@ -2,17 +2,12 @@ package com.tododiary.tododiarybe.service.impl;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -25,8 +20,6 @@ import com.tododiary.tododiarybe.service.IFileService;
 
 @Service
 public class FileService implements IFileService {
-
-	private static Logger logger = LoggerFactory.getLogger(FileService.class);
 
 	@Autowired
 	private IFileRepository fileRepository;
@@ -45,6 +38,7 @@ public class FileService implements IFileService {
 		}
 
 		String fileName = UUID.randomUUID().toString();
+		fileName += file.getContentType().replace("/", ".");
 		Path filePath = ROOT.resolve(folderPath).resolve(fileName);
 		try {
 			Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
