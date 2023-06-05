@@ -14,13 +14,17 @@ public class TodoDto {
 	
 	private Date date;
 	
-	private float poxX;
+	private float posX;
 	
-	private float poxY;
+	private float posY;
 	
 	private boolean landscape;
 	
 	private String size;
+	
+	private String title;
+	
+	private String note;
 	
 	private List<Task> listTask;
 }

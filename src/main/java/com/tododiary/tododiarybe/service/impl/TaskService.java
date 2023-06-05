@@ -13,10 +13,19 @@ public class TaskService implements ITaskService {
 
 	@Autowired
 	private ITaskRepository taskRepository;
-	
+
 	@Override
-	public Task createTask(Todo todo, Task task) {
-		task.setTodo(todo);
+	public Task createTask(Todo todo) {
+		Task task = Task.builder().type("checkbox").progress(0).detail("Hello world").todo(todo).build();
+
+		return taskRepository.save(task);
+	}
+	
+	@Override 
+	public Task updateTask(Task task) {
+		Task updatedTask = taskRepository.findById(task.getId()).get();
+		
+		task.setTodo(updatedTask.getTodo());
 		
 		return taskRepository.save(task);
 	}

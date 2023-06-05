@@ -6,8 +6,14 @@ import com.tododiary.tododiarybe.entity.Todo;
 
 public interface ITodoService {
 
-	Collection<Todo> getTodayTodo(String userUsername);
+	Collection<Todo> getListTodayTodo(String userUsername);
 
-	Todo createTodayTodo(String userUsername, Todo todo);
+	Todo createTodayTodo(String userUsername);
+
+	Todo updateTodayTodo(Todo todo);
+
+	Todo getTodayTodo(String userUsername, String id);
+
+	
 
 }

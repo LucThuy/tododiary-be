@@ -5,6 +5,8 @@ import com.tododiary.tododiarybe.entity.Todo;
 
 public interface ITaskService {
 
-	Task createTask(Todo todo, Task task);
+	Task createTask(Todo todo);
+
+	Task updateTask(Task task);
 
 }

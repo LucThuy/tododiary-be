@@ -40,6 +40,10 @@ public class Todo {
 	
 	private boolean landscape;
 	
+	private String title;
+	
+	private String note;
+	
 	private String size;
 	
 	@ManyToOne

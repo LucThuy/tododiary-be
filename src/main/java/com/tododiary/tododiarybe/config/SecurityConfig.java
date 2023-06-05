@@ -16,6 +16,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.tododiary.tododiarybe.security.JwtAuthenticationEntryPoint;
 import com.tododiary.tododiarybe.security.JwtAuthenticationFilter;
+import com.tododiary.tododiarybe.security.oauth2.CustomOAuth2UserService;
+import com.tododiary.tododiarybe.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.tododiary.tododiarybe.security.oauth2.OAuth2AuthenticationFailureHandler;
+import com.tododiary.tododiarybe.security.oauth2.OAuth2AuthenticationSuccessHandler;
 
 @Configuration
 @EnableMethodSecurity
@@ -27,23 +31,48 @@ public class SecurityConfig {
 	@Autowired
 	private JwtAuthenticationFilter authenticationFilter;
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+	@Autowired
+	private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-		return configuration.getAuthenticationManager();
-	}
+	@Autowired
+	private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+
+	@Autowired
+	private CustomOAuth2UserService customOAuth2UserService;
+
+    @Bean
+    public static PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.cors().and().csrf().disable()
-				.authorizeHttpRequests((authorize) -> authorize.requestMatchers(HttpMethod.GET, "/files/**").permitAll()
+		http.cors().and().csrf().disable().authorizeHttpRequests((authorize) -> {
+			try {
+				authorize.requestMatchers(HttpMethod.GET, "/files/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/file/download/**").permitAll()
-						.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated())
-				.exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
+						.requestMatchers("/api/auth/**").permitAll().requestMatchers("/oauth2/**").permitAll()
+						.anyRequest().authenticated().and().oauth2Login().authorizationEndpoint()
+						.baseUri("/oauth2/authorize")
+						.authorizationRequestRepository(cookieAuthorizationRequestRepository()).and()
+						.redirectionEndpoint().baseUri("/oauth2/callback/*")
+						.and().userInfoEndpoint().userService(customOAuth2UserService)
+						.and().successHandler(oAuth2AuthenticationSuccessHandler)
+						.failureHandler(oAuth2AuthenticationFailureHandler);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -70,6 +70,7 @@ public class AuthService implements IAuthService {
 		
 		File avatarFile = fileService.save(avatar, "images/" + updateUser.getId());
 		updateUser.setAvatar(avatarFile);
+		updateUser.setAvatarUri("http://localhost:8080/" + avatarFile.getUri());
 		
 		userRepository.saveAndFlush(updateUser);
 		
